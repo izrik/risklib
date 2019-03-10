@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import traceback
 from random import randint
 import readline
@@ -11,50 +10,58 @@ def roll(num_dice):
 
 
 def repl():
-    parser = argparse.ArgumentParser()
-    subs = parser.add_subparsers()
-
-    roll_s = subs.add_parser('roll')
-    roll_s.add_argument('num_dice', nargs='?', default=3, type=int)
-    roll_s.set_defaults(func=cmd_roll)
-
-    attack_s = subs.add_parser('attack')
-    attack_s.add_argument('attacker', nargs='?', default=3, type=int)
-    attack_s.add_argument('defender', nargs='?', default=2, type=int)
-    attack_s.set_defaults(func=cmd_attack)
-
     prompt = '> '
     while True:
         try:
             input_s = input(prompt)
-            args = parser.parse_args(input_s.split())
-            if 'func' in args and args.func:
-                args.func(args)
+            if not input_s:
+                continue
+            input_s = input_s.strip()
+            if not input_s:
+                continue
+            parts = input_s.split()
+            command = parts[0]
+            nparts = len(parts)
+            if command in ['exit', 'quit']:
+                break
+            elif command == 'roll':
+                num_dice = 1
+                if nparts > 1:
+                    num_dice = int(parts[1])
+                cmd_roll(num_dice)
+            elif command == 'attack':
+                attacker = 3
+                defender = 2
+                if nparts > 1:
+                    attacker = int(parts[1])
+                if nparts > 2:
+                    defender = int(parts[2])
+                cmd_attack(attacker, defender)
             else:
-                parser.print_help()
+                print(f'Unknown: "{command}"')
         except EOFError:
             print('')
             break
         except KeyboardInterrupt:
             print('')
             continue
-        except (Exception, SystemExit, argparse.ArgumentError) as ex:
+        except Exception as ex:
             print('Caught the following exception:')
             tb = traceback.format_exception(type(ex), ex, ex.__traceback__)
             for line in tb:
                 print('  ' + line, end='')
 
 
-def cmd_roll(args):
-    print('    ' + str(roll(args.num_dice)))
+def cmd_roll(num_dice):
+    print('    ' + str(roll(num_dice)))
 
 
-def cmd_attack(args):
-    attacker = roll(args.attacker)
-    defender = roll(args.defender)
+def cmd_attack(attacker, defender):
+    rattacker = roll(attacker)
+    rdefender = roll(defender)
 
-    print(f'    attacker: {attacker}')
-    print(f'    defender: {defender}')
+    print(f'    attacker: {rattacker}')
+    print(f'    defender: {rdefender}')
 
     attacker_loses = 0
     defender_loses = 0
@@ -66,10 +73,9 @@ def cmd_attack(args):
             attacker_loses += 1
         else:
             defender_loses += 1
-        return [a,d]
+        return [a, d]
 
-    x = list(map(cmp_, attacker, defender))
-    # print(f'x: {x}')
+    list(map(cmp_, rattacker, rdefender))
 
     if attacker_loses > 0:
         print(f'    attacker loses {attacker_loses}')
