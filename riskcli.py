@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import traceback
-from random import randint
+from itertools import cycle
+from random import randint, shuffle
 import readline
 
 
@@ -65,6 +66,11 @@ class Player:
         self.color = color
         self.territories = []
 
+    def count_all_armies(self):
+        count = 0
+        for t in self.territories:
+            count += t.num_armies
+
 
 class Territory:
     def __init__(self, name, neighbors_by_name):
@@ -108,12 +114,19 @@ class Map:
 
 
 class Game:
-    def __init__(self, players, map):
+    def __init__(self, players, game_map):
         self.players = players
-        self.map = map
+        self.game_map = game_map
+        self.turns = []
+        self.next_player = players[0]
+
+    def get_most_recent_turn(self):
+        if not self.turns:
+            return None
+        return self.turns[-1]
 
 
-map = Map(
+default_map = Map(
     territories=[
         Territory(ALASKA, neighbors_by_name=[KAMCHATKA, NW_TERR, ALBERTA]),
         Territory(NW_TERR, neighbors_by_name=[ONTARIO, ALBERTA, GREENLAND]),
@@ -173,14 +186,20 @@ map = Map(
                             SIAM]),
         Continent(AUSTRALIA, 2, [INDONESIA, NEW_GUINEA, W_AUST, E_AUST])])
 
-game = Game(players=[Player('player1', 'red'), Player('player2', 'black')],
-            map=map)
+
+def print_info(game):
+    if game is None:
+        print('No game started. Type "start" to start a new game.')
+        return
+    print(f'It is {game.next_player.name}\'s turn.')
 
 
 def repl():
     prompt = '> '
+    game = None
     while True:
         try:
+            print_info(game)
             input_s = input(prompt)
             if not input_s:
                 continue
@@ -205,6 +224,8 @@ def repl():
                 if nparts > 2:
                     defender = int(parts[2])
                 cmd_attack(attacker, defender)
+            elif command == 'start':
+                game = cmd_start()
             else:
                 print(f'Unknown: "{command}"')
         except EOFError:
@@ -249,6 +270,23 @@ def cmd_attack(attacker, defender):
         print(f'    attacker loses {attacker_loses}')
     if defender_loses > 0:
         print(f'    defender loses {defender_loses}')
+
+
+def cmd_start():
+    game = Game(players=[Player('player1', 'red'),
+                         Player('player2', 'black')],
+                game_map=default_map)
+
+    print('The players, in order, are:')
+    for i, player in enumerate(game.players):
+        print(f' {i+1}. {player.name} ({player.color})')
+    print('Territories will be assigned randomly.')
+    terrs = list(game.game_map.territories)
+    shuffle(terrs)
+    for terr, player in zip(terrs, cycle(game.players)):
+        player.territories.append(terr)
+        terr.num_armies = 1
+    return game
 
 
 if __name__ == '__main__':
