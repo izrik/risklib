@@ -28,7 +28,7 @@ EUROPE = 'Europe'
 GREAT_BRITAIN = 'Great Britain'
 GREENLAND = 'Greenland'
 ICELAND = 'Iceland'
-INDA = 'Inda'
+INDIA = 'India'
 INDONESIA = 'Indonesia'
 IRKUTSK = 'Irkutsk'
 JAPAN = 'Japan'
@@ -143,15 +143,15 @@ map = Map(
         Territory(CONGO, neighbors_by_name=[S_AFRICA]),
         Territory(S_AFRICA, neighbors_by_name=[MADAGASCAR]),
         Territory(MADAGASCAR, neighbors_by_name=[]),
-        Territory(MIDDLE_EAST, neighbors_by_name=[AFGHANISTAN, INDA]),
-        Territory(AFGHANISTAN, neighbors_by_name=[URAL, CHINA, INDA]),
+        Territory(MIDDLE_EAST, neighbors_by_name=[AFGHANISTAN, INDIA]),
+        Territory(AFGHANISTAN, neighbors_by_name=[URAL, CHINA, INDIA]),
         Territory(URAL, neighbors_by_name=[SIBERIA, CHINA]),
         Territory(SIBERIA, neighbors_by_name=[MONGOLIA, CHINA, IRKUTSK,
                                               YAKUTSK]),
         Territory(YAKUTSK, neighbors_by_name=[KAMCHATKA, IRKUTSK]),
         Territory(IRKUTSK, neighbors_by_name=[KAMCHATKA, MONGOLIA]),
         Territory(KAMCHATKA, neighbors_by_name=[MONGOLIA, JAPAN]),
-        Territory(INDA, neighbors_by_name=[SIAM, CHINA]),
+        Territory(INDIA, neighbors_by_name=[SIAM, CHINA]),
         Territory(CHINA, neighbors_by_name=[MONGOLIA, SIAM]),
         Territory(MONGOLIA, neighbors_by_name=[JAPAN]),
         Territory(JAPAN, neighbors_by_name=[]),
@@ -169,7 +169,7 @@ map = Map(
         Continent(AFRICA, 3, [N_AFRICA, EGYPT, E_AFRICA, CONGO, S_AFRICA,
                               MADAGASCAR]),
         Continent(ASIA, 7, [MIDDLE_EAST, AFGHANISTAN, URAL, SIBERIA, YAKUTSK,
-                            IRKUTSK, KAMCHATKA, INDA, CHINA, MONGOLIA, JAPAN,
+                            IRKUTSK, KAMCHATKA, INDIA, CHINA, MONGOLIA, JAPAN,
                             SIAM]),
         Continent(AUSTRALIA, 2, [INDONESIA, NEW_GUINEA, W_AUST, E_AUST])])
 
