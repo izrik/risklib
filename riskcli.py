@@ -64,30 +64,130 @@ class Player:
     def __init__(self, name, color):
         self.name = name
         self.color = color
-        self.territories = []
+        self.territories = Player.Territories(self)
 
     def count_all_armies(self):
         count = 0
         for t in self.territories:
             count += t.num_armies
 
+    class Territories:
+        def __init__(self, player):
+            self.player = player
+            self._set = set()
+
+        def __iter__(self):
+            return sorted(self._set).__iter__()
+
+        def __len__(self):
+            return len(self._set)
+
+        def append(self, item):
+            return self.add(item)
+
+        def add(self, item):
+            if item not in self:
+                item.owner = None
+                self._set.add(item)
+                item.owner = self.player
+
+        def remove(self, item):
+            if item in self:
+                self._set.remove(item)
+                item.owner = None
+
 
 class Territory:
-    def __init__(self, name, neighbors_by_name):
+    def __init__(self, name, neighbors_by_name=None):
         self.name = name
-        self.neighbors = []
-        self.continent = None
-        self.owner = None
+        self.neighbors = Territory.Neighbors(self)
+        self._continent = None
+        self._owner = None
         self.num_armies = 0
         self.neighbors_by_name = neighbors_by_name
 
+    @property
+    def owner(self):
+        return self._owner
+
+    @owner.setter
+    def owner(self, value):
+        if value != self._owner:
+            if self._owner is not None:
+                self._owner.territories.remove(self)
+            self._owner = value
+            if self._owner is not None:
+                self._owner.territories.add(self)
+
+    @property
+    def continent(self):
+        return self._continent
+
+    @continent.setter
+    def continent(self, value):
+        if value != self._continent:
+            if self._continent is not None:
+                self._continent.territories.remove(self)
+            self._continent = value
+            if self._continent is not None:
+                self._continent.territories.add(self)
+
+    class Neighbors:
+        def __init__(self, container):
+            self.container = container
+            self._set = set()
+
+        def __iter__(self):
+            return sorted(self._set).__iter__()
+
+        def __len__(self):
+            return len(self._set)
+
+        def append(self, item):
+            return self.add(item)
+
+        def add(self, item):
+            if item not in self:
+                self._set.add(item)
+                item.neighbors.add(self.container)
+
+        def remove(self, item):
+            if item in self:
+                self._set.remove(item)
+                item.neighbors.remove(self.container)
+
 
 class Continent:
-    def __init__(self, name, bonus, territories_by_name):
+    def __init__(self, name, bonus=None, territories_by_name=None):
         self.name = name
         self.bonus = bonus
-        self.territories = []
+        self.territories = Continent.Territories(self)
         self.territories_by_name = territories_by_name
+
+    class Territories:
+        def __init__(self, player):
+            self.player = player
+            self._set = set()
+
+        def __iter__(self):
+            return sorted(self._set).__iter__()
+
+        def __len__(self):
+            return len(self._set)
+
+        def append(self, item):
+            return self.add(item)
+
+        def add(self, item):
+            if item not in self:
+                item.continent = None
+                self._set.add(item)
+                item.continent = self.player
+
+        def remove(self, item):
+            if item in self:
+                self._set.remove(item)
+                item.continent = None
 
 
 class Map:
