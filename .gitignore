@@ -106,3 +106,6 @@ venv.bak/
 # pycharm
 .idea/
 *.iml
+
+# misc
+_scratch*
