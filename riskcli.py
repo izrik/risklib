@@ -9,6 +9,174 @@ def roll(num_dice):
     return sorted([randint(1, 6) for _ in range(num_dice)], reverse=True)
 
 
+AFGHANISTAN = 'Afghanistan'
+AFRICA = 'Africa'
+ALASKA = 'Alaska'
+ALBERTA = 'Alberta'
+ARGENTINA = 'Argentina'
+ASIA = 'Asia'
+AUSTRALIA = 'Australia'
+BRAZIL = 'Brazil'
+CENT_AM = 'Cent Am'
+CHINA = 'China'
+CONGO = 'Congo'
+E_AFRICA = 'E Africa'
+E_AUST = 'E Aust'
+E_US = 'E_US'
+EGYPT = 'Egypt'
+EUROPE = 'Europe'
+GREAT_BRITAIN = 'Great Britain'
+GREENLAND = 'Greenland'
+ICELAND = 'Iceland'
+INDA = 'Inda'
+INDONESIA = 'Indonesia'
+IRKUTSK = 'Irkutsk'
+JAPAN = 'Japan'
+KAMCHATKA = 'Kamchatka'
+MADAGASCAR = 'Madagascar'
+MIDDLE_EAST = 'Middle East'
+MONGOLIA = 'Mongolia'
+N_AFRICA = 'N Africa'
+N_EURO = 'N Euro'
+NW_TERR = 'NW Terr'
+NEW_GUINEA = 'New Guinea'
+NORTH_AMERICA = 'North America'
+ONTARIO = 'Ontario'
+PERU = 'Peru'
+QUEBEC = 'Quebec'
+S_AFRICA = 'S Africa'
+S_EURO = 'S Euro'
+SCAND = 'Scand'
+SIAM = 'Siam'
+SIBERIA = 'Siberia'
+SOUTH_AMERICA = 'South America'
+UKRAINE = 'Ukraine'
+URAL = 'Ural'
+VENEZ = 'Venez'
+W_AUST = 'W Aust'
+W_EURO = 'W Euro'
+W_US = 'W_US'
+YAKUTSK = 'Yakutsk'
+
+
+class Player:
+    def __init__(self, name, color):
+        self.name = name
+        self.color = color
+        self.territories = []
+
+
+class Territory:
+    def __init__(self, name, neighbors_by_name):
+        self.name = name
+        self.neighbors = []
+        self.continent = None
+        self.owner = None
+        self.num_armies = 0
+        self.neighbors_by_name = neighbors_by_name
+
+
+class Continent:
+    def __init__(self, name, bonus, territories_by_name):
+        self.name = name
+        self.bonus = bonus
+        self.territories = []
+        self.territories_by_name = territories_by_name
+
+
+class Map:
+    def __init__(self, territories, continents):
+        self.territories = territories
+        self.continents = continents
+
+        self.t_by_name = {}
+        for t in self.territories:
+            self.t_by_name[t.name] = t
+
+        for t in self.territories:
+            for nname in t.neighbors_by_name:
+                t.neighbors.append(self.t_by_name[nname])
+                self.t_by_name[nname].neighbors.append(t)
+
+        for c in self.continents:
+            for tname in c.territories_by_name:
+                c.territories.append(self.t_by_name[tname])
+
+        self.c_by_name = {}
+        for c in self.continents:
+            self.c_by_name[c.name] = c
+
+
+class Game:
+    def __init__(self, players, map):
+        self.players = players
+        self.map = map
+
+
+map = Map(
+    territories=[
+        Territory(ALASKA, neighbors_by_name=[KAMCHATKA, NW_TERR, ALBERTA]),
+        Territory(NW_TERR, neighbors_by_name=[ONTARIO, ALBERTA, GREENLAND]),
+        Territory(GREENLAND, neighbors_by_name=[ONTARIO, ICELAND, QUEBEC]),
+        Territory(ALBERTA, neighbors_by_name=[ONTARIO, W_US]),
+        Territory(ONTARIO, neighbors_by_name=[E_US, QUEBEC, W_US]),
+        Territory(QUEBEC, neighbors_by_name=[E_US]),
+        Territory(W_US, neighbors_by_name=[E_US, CENT_AM]),
+        Territory(E_US, neighbors_by_name=[CENT_AM]),
+        Territory(CENT_AM, neighbors_by_name=[VENEZ]),
+        Territory(VENEZ, neighbors_by_name=[BRAZIL, PERU]),
+        Territory(BRAZIL, neighbors_by_name=[PERU, ARGENTINA, N_AFRICA]),
+        Territory(PERU, neighbors_by_name=[ARGENTINA]),
+        Territory(ARGENTINA, neighbors_by_name=[]),
+        Territory(ICELAND, neighbors_by_name=[SCAND, GREAT_BRITAIN]),
+        Territory(SCAND, neighbors_by_name=[GREAT_BRITAIN, UKRAINE, N_EURO]),
+        Territory(GREAT_BRITAIN, neighbors_by_name=[W_EURO, N_EURO]),
+        Territory(W_EURO, neighbors_by_name=[S_EURO, N_AFRICA, N_EURO]),
+        Territory(N_EURO, neighbors_by_name=[UKRAINE, S_EURO]),
+        Territory(S_EURO, neighbors_by_name=[MIDDLE_EAST, EGYPT, UKRAINE,
+                                             N_AFRICA]),
+        Territory(UKRAINE, neighbors_by_name=[MIDDLE_EAST, AFGHANISTAN,
+                                              URAL]),
+        Territory(N_AFRICA, neighbors_by_name=[E_AFRICA, EGYPT, CONGO]),
+        Territory(EGYPT, neighbors_by_name=[E_AFRICA, MIDDLE_EAST]),
+        Territory(E_AFRICA, neighbors_by_name=[S_AFRICA, CONGO, MADAGASCAR]),
+        Territory(CONGO, neighbors_by_name=[S_AFRICA]),
+        Territory(S_AFRICA, neighbors_by_name=[MADAGASCAR]),
+        Territory(MADAGASCAR, neighbors_by_name=[]),
+        Territory(MIDDLE_EAST, neighbors_by_name=[AFGHANISTAN, INDA]),
+        Territory(AFGHANISTAN, neighbors_by_name=[URAL, CHINA, INDA]),
+        Territory(URAL, neighbors_by_name=[SIBERIA, CHINA]),
+        Territory(SIBERIA, neighbors_by_name=[MONGOLIA, CHINA, IRKUTSK,
+                                              YAKUTSK]),
+        Territory(YAKUTSK, neighbors_by_name=[KAMCHATKA, IRKUTSK]),
+        Territory(IRKUTSK, neighbors_by_name=[KAMCHATKA, MONGOLIA]),
+        Territory(KAMCHATKA, neighbors_by_name=[MONGOLIA, JAPAN]),
+        Territory(INDA, neighbors_by_name=[SIAM, CHINA]),
+        Territory(CHINA, neighbors_by_name=[MONGOLIA, SIAM]),
+        Territory(MONGOLIA, neighbors_by_name=[JAPAN]),
+        Territory(JAPAN, neighbors_by_name=[]),
+        Territory(SIAM, neighbors_by_name=[INDONESIA]),
+        Territory(INDONESIA, neighbors_by_name=[NEW_GUINEA, W_AUST]),
+        Territory(NEW_GUINEA, neighbors_by_name=[W_AUST, E_AUST]),
+        Territory(W_AUST, neighbors_by_name=[E_AUST]),
+        Territory(E_AUST, neighbors_by_name=[])],
+    continents=[
+        Continent(NORTH_AMERICA, 5, [ALASKA, NW_TERR, GREENLAND, ALBERTA,
+                                     ONTARIO, QUEBEC, W_US, E_US, CENT_AM]),
+        Continent(SOUTH_AMERICA, 2, [VENEZ, BRAZIL, PERU, ARGENTINA]),
+        Continent(EUROPE, 5, [ICELAND, SCAND, GREAT_BRITAIN, W_EURO, N_EURO,
+                              S_EURO, UKRAINE]),
+        Continent(AFRICA, 3, [N_AFRICA, EGYPT, E_AFRICA, CONGO, S_AFRICA,
+                              MADAGASCAR]),
+        Continent(ASIA, 7, [MIDDLE_EAST, AFGHANISTAN, URAL, SIBERIA, YAKUTSK,
+                            IRKUTSK, KAMCHATKA, INDA, CHINA, MONGOLIA, JAPAN,
+                            SIAM]),
+        Continent(AUSTRALIA, 2, [INDONESIA, NEW_GUINEA, W_AUST, E_AUST])])
+
+game = Game(players=[Player('player1', 'red'), Player('player2', 'black')],
+            map=map)
+
+
 def repl():
     prompt = '> '
     while True:
