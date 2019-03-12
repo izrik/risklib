@@ -77,7 +77,10 @@ class Player:
             self._set = set()
 
         def __iter__(self):
-            return sorted(self._set).__iter__()
+            return sorted(self._set, key=lambda t: t.name).__iter__()
+
+        def __contains__(self, item):
+            return item in self._set
 
         def __len__(self):
             return len(self._set)
@@ -138,7 +141,10 @@ class Territory:
             self._set = set()
 
         def __iter__(self):
-            return sorted(self._set).__iter__()
+            return sorted(self._set, key=lambda t: t.name).__iter__()
+
+        def __contains__(self, item):
+            return item in self._set
 
         def __len__(self):
             return len(self._set)
@@ -170,7 +176,10 @@ class Continent:
             self._set = set()
 
         def __iter__(self):
-            return sorted(self._set).__iter__()
+            return sorted(self._set, key=lambda t: t.name).__iter__()
+
+        def __contains__(self, item):
+            return item in self._set
 
         def __len__(self):
             return len(self._set)
