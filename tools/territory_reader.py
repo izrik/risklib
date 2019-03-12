@@ -26,6 +26,7 @@ with open('territories.csv') as csvfile:
 #     for other in territories[name]:
 #         territories[other].add(name)
 
-for name in territories:
-    # neighbor_list = ', '.join(f'\'{_}\'' for _ in territories[name])
-    # print(f"        Territory('{name}', neighbors_by_name=[{neighbor_list}]),")
+# for name in territories:
+#     neighbor_list = ', '.join(f'\'{_}\'' for _ in territories[name])
+#     print(f"        Territory('{name}', "
+#           f"neighbors_by_name=[{neighbor_list}]),")
