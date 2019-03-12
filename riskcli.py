@@ -235,6 +235,16 @@ class Game:
             return None
         return self.turns[-1]
 
+    def get_object_by_name(self, name):
+        for p in self.players:
+            if p.name == name:
+                return p
+        if name in self.game_map.t_by_name:
+            return self.game_map.t_by_name[name]
+        if name in self.game_map.c_by_name:
+            return self.game_map.c_by_name[name]
+        return None
+
 
 def gen_default_map():
     return Map(
@@ -349,6 +359,12 @@ def repl():
                     player_num = int(parts[1]) - 1
                     player = game.players[player_num]
                 cmd_print_player(player, game)
+            elif command == 'view':
+                if nparts < 2:
+                    print('No object name specified. '
+                          'What do you want to view?')
+                else:
+                    cmd_view(' '.join(parts[1:]), game)
             else:
                 print(f'Unknown: "{command}"')
         except EOFError:
@@ -427,6 +443,37 @@ def cmd_print_player(player, game):
             for t in t_in_c:
                 print(f'        {t.name} ({t.num_armies})')
     print('')
+
+
+def cmd_print_continent(continent, game):
+    print(f'    {continent.name}')
+    print(f'    Bonus: {continent.bonus}')
+    print(f'    Territories:')
+    for t in continent.territories:
+        print(f'        {t.name} ({t.owner.name}, {t.num_armies})')
+    print('')
+
+
+def cmd_print_territory(territory, game):
+    print(f'    {territory.name}')
+    print(f'    Owner: {territory.owner.name}')
+    print(f'    Number of armies: {territory.num_armies}')
+    print(f'    Neighbors:')
+    for t in territory.neighbors:
+        print(f'        {t.name} ({t.owner.name}, {t.num_armies})')
+    print('')
+
+
+def cmd_view(name, game):
+    obj = game.get_object_by_name(name)
+    if isinstance(obj, Player):
+        cmd_print_player(obj, game)
+    elif isinstance(obj, Continent):
+        cmd_print_continent(obj, game)
+    elif isinstance(obj, Territory):
+        cmd_print_territory(obj, game)
+    else:
+        print(f'Nothing found be the name "{name}".')
 
 
 if __name__ == '__main__':
