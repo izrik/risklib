@@ -107,6 +107,7 @@ class Map:
         for c in self.continents:
             for tname in c.territories_by_name:
                 c.territories.append(self.t_by_name[tname])
+                self.t_by_name[tname].continent = c
 
         self.c_by_name = {}
         for c in self.continents:
@@ -226,6 +227,12 @@ def repl():
                 cmd_attack(attacker, defender)
             elif command == 'start':
                 game = cmd_start()
+            elif command == 'player':
+                player = game.next_player
+                if nparts > 1:
+                    player_num = int(parts[1]) - 1
+                    player = game.players[player_num]
+                cmd_print_player(player, game)
             else:
                 print(f'Unknown: "{command}"')
         except EOFError:
@@ -279,14 +286,31 @@ def cmd_start():
 
     print('The players, in order, are:')
     for i, player in enumerate(game.players):
-        print(f' {i+1}. {player.name} ({player.color})')
+        print(f'  {i + 1}. {player.name} ({player.color})')
     print('Territories will be assigned randomly.')
     terrs = list(game.game_map.territories)
     shuffle(terrs)
     for terr, player in zip(terrs, cycle(game.players)):
         player.territories.append(terr)
+        terr.owner = player
         terr.num_armies = 1
     return game
+
+
+def cmd_print_player(player, game):
+    print(f'    {player.name}')
+    print(f'    Color: {player.color}')
+    # territory_list = ', '.join(f'{t.name} ({t.num_armies})'
+    #                            for t in player.territories)
+    # print(f'    Territories: {territory_list}')
+    print(f'    Territories:')
+    for c in game.game_map.continents:
+        t_in_c = [t for t in c.territories if t.owner is player]
+        if t_in_c:
+            print(f'      {c.name}:')
+            for t in t_in_c:
+                print(f'        {t.name} ({t.num_armies})')
+    print('')
 
 
 if __name__ == '__main__':
